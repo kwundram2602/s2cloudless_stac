@@ -1,0 +1,48 @@
+[project]
+name = "s2cloudless-stac"
+version = "0.1.0"
+description = "s2cloudless CLP/CLM for Sentinel-2 L2A scenes, computed from their L1C counterpart on CDSE STAC"
+authors = [
+    { name = "Kjell Wundram", email = "kjell.wundram@protonmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.5.3",
+    "odc-stac>=0.5.3",
+    "pystac-client>=0.9.0",
+    "python-dotenv>=1.2.4",
+    "rasterio>=1.5.2",
+    "s2cloudless>=1.7.3",
+    "xarray>=2026.9.0",
+]
+
+[project.scripts]
+s2cl = "s2cloudless_stac.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+# Only resolve for the platforms this project targets
+environments = [
+    "sys_platform == 'linux'",
+    "sys_platform == 'win32'",
+]
+# Fail at lock time if a package ships wheels but none for one of these platforms
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+]
+# Ignore releases younger than 7 days (supply-chain protection)
+exclude-newer = "7 days"
+# Never build from source: sdist-only packages fail on Windows, so make them
+# fail everywhere. rasterio bundles GDAL.
+no-build = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+    "ty>=0.0.84",
+]
